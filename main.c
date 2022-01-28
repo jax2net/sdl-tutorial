@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <stdbool.h>
+#include <stdlib.h>
 
 #ifdef _WIN32
 #include <SDL.h>
@@ -10,67 +10,55 @@
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
-int init(void);
-int load_media(void);
-void close(void);
+SDL_Surface* load_surface(char* path) {
+    SDL_Surface* loaded_surface = SDL_LoadBMP(path);
+    return loaded_surface;
+}
 
-SDL_Window *gWindow = NULL;
-SDL_Surface *gScreenSurface = NULL;
-SDL_Surface *gHelloWorld = NULL;
 
-int init(void) {
-    int success = 1;
+int main(int argc, char *argv[]) {
+    SDL_Window *window;
+    SDL_Surface *screen;
+    SDL_Surface *current_surface = NULL;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        printf("SDL could not init: %s\n", SDL_GetError());
-        success = 0;
-    } else {
-        // create win
-        gWindow = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-        if (gWindow == NULL) {
-            printf("Window could not be created! SDL_ERROR: %s\n", SDL_GetError());
-            success = 0;
-        } else {
-            gScreenSurface = SDL_GetWindowSurface(gWindow);
+        printf("Could not init SDL!: %s\n", SDL_GetError());
+        exit(0);
+    }
+
+    window = SDL_CreateWindow("SDL hi world", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
+    screen = SDL_GetWindowSurface(window);
+
+    int quit = 0;
+    SDL_Event e;
+    
+    while (!quit) {
+        while (SDL_PollEvent(&e) != 0) {
+            if (e.type == SDL_QUIT) {
+                quit = 1;
+            } else if (e.type == SDL_KEYDOWN) {
+                switch (e.key.keysym.sym) {
+                case SDLK_UP:
+                    current_surface = load_surface("up.bmp");
+                    break;
+                case SDLK_DOWN:
+                    current_surface = load_surface("down.bmp");
+                    break;
+                case SDLK_LEFT:
+                    current_surface = load_surface("left.bmp");
+                    break;
+                case SDLK_RIGHT:
+                    current_surface = load_surface("right.bmp");
+                    break;
+                }
+            }
         }
+        SDL_BlitSurface(current_surface, NULL, screen, NULL);
+        SDL_UpdateWindowSurface(window);
     }
-    return success;
-}
 
-int load_media(void) {
-    int success = 1;
-    gHelloWorld = SDL_LoadBMP("hello_world.bmp");
-    if (gHelloWorld == NULL) {
-        printf("Unable to load image %s! SDL Error: %s\n", "hello_world.bmp", SDL_GetError());
-        success = 0;
-    }
-    return success;
-}
-
-void close(void) {
-    SDL_FreeSurface(gHelloWorld);
-    gHelloWorld = NULL;
-
-    SDL_DestroyWindow(gWindow);
-    gWindow = NULL;
-
+    SDL_DestroyWindow(window);
+    
     SDL_Quit();
-}
-
-
-
-int main(int argc, char* argv[]) {
-    if (!init()) {
-        printf("Failed to init!\n");
-    } else {
-        if (!load_media()) {
-            printf("Failed to load media!\n");
-        } else {
-            SDL_BlitSurface(gHelloWorld, NULL, gScreenSurface, NULL);
-            SDL_UpdateWindowSurface(gWindow);
-            SDL_Delay(3000);
-        }
-    }
-    close();
     return 0;
 }
