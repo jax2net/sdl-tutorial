@@ -37,8 +37,10 @@ int main(int argc, char* argv[]) {
         printf("Failed to create renderer: %s\n", SDL_GetError());
     }
 
+    
+
     // init renderer draw color
-    SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
+    
     texture = load_texture("dice.png", renderer);
 
     SDL_Event e;
@@ -48,8 +50,11 @@ int main(int argc, char* argv[]) {
         while (SDL_PollEvent(&e) != 0) {
             if (e.type == SDL_QUIT) exit = 1;
         }
+        SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
         SDL_RenderClear(renderer);
-        SDL_RenderCopy(renderer, texture, NULL, NULL);
+        SDL_Rect rect = { SCREEN_WIDTH / 4, SCREEN_HEIGHT / 4, SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
+        SDL_SetRenderDrawColor(renderer, 0xFF, 0x00, 0x00, 0xFF);
+        SDL_RenderFillRect(renderer, &rect);
         SDL_RenderPresent(renderer);
     }
 
