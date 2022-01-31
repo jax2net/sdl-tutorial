@@ -4,9 +4,11 @@
 #ifdef _WIN32
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #else
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #endif
 
 const int SCREEN_WIDTH = 640;
@@ -15,12 +17,13 @@ const int SCREEN_HEIGHT = 480;
 SDL_Window* window;
 SDL_Renderer* renderer;
 
-SDL_Rect clips[4];
-
 typedef struct {
     SDL_Texture* ture;
     int w, h;
 } LTexture;
+
+TTF_Font *font = NULL;
+LTexture font_texture;
 
 void free_texture(LTexture* obj) {
     if (obj != NULL) {
@@ -31,63 +34,30 @@ void free_texture(LTexture* obj) {
     }
 }
 
-void init_clips() {
-    // top left
-    clips[0].x = 0;
-    clips[0].y = 0;
-    clips[0].w = 100;
-    clips[0].h = 100;
-
-    // top right
-    clips[1].x = 100;
-    clips[1].y = 0;
-    clips[1].w = 100;
-    clips[1].h = 100;
-
-    // bottom left
-    clips[2].x = 0;
-    clips[2].y = 100;
-    clips[2].w = 100;
-    clips[2].h = 100;
-
-    // bottom right
-    clips[3].x = 100;
-    clips[3].y = 100;
-    clips[3].w = 100;
-    clips[3].h = 100;
-}
-
-void load_file(char* path, LTexture* obj) {
-    free_texture(obj);
-    SDL_Surface* loaded_surface = IMG_Load(path);
-        
-    if (loaded_surface == NULL) {
-        printf("Cannot load image: %s %s\n", path, IMG_GetError());
+void load_font(char* texture_text, LTexture* obj) {
+    SDL_Color text_color = { 0, 0, 0 };
+    font = TTF_OpenFont("lazy.ttf", 28);
+    if (font == NULL) {
+        printf("Failed to load font: %s\n", TTF_GetError());
     }
-
-    SDL_SetColorKey(loaded_surface, SDL_TRUE, SDL_MapRGB(loaded_surface->format, 0, 0xFF, 0xFF));
     
-    obj->ture = SDL_CreateTextureFromSurface(renderer, loaded_surface);
+    SDL_Surface* text_surface = TTF_RenderText_Solid(font, texture_text, text_color);
+    if (text_surface == NULL) {
+        printf("Can't create texture from rendered text: %s\n", SDL_GetError());
+    }
+    
+    obj->ture = SDL_CreateTextureFromSurface(renderer, text_surface);
     if (obj->ture == NULL) {
-        printf("Texture is null: %s\n", SDL_GetError());
+        printf("ERROR IN creating texture from surface: %s\n", TTF_GetError());
     }
     
-    obj->w = loaded_surface->w;
-    obj->h = loaded_surface->h;
-    
-    SDL_FreeSurface(loaded_surface);
+    obj->w = text_surface->w;
+    obj->h = text_surface->h;
+    SDL_FreeSurface(text_surface);
 }
 
-void render(int x, int y, LTexture* obj, SDL_Rect* clip) {
-    SDL_Rect render_quad = { x, y, obj->w, obj->h };
-
-    // clip rendering dimensions
-    if (clip != NULL) {
-        render_quad.w = clip->w;
-        render_quad.h = clip->h;
-    }
-    
-    SDL_RenderCopy(renderer, obj->ture, clip, &render_quad);
+void render(int x, int y, LTexture* obj) {
+    SDL_RenderCopy(renderer, obj->ture, NULL, NULL);
 }
 
 int main() {
@@ -95,23 +65,29 @@ int main() {
         printf("Cannot initialize video: %s\n", SDL_GetError());
     }
 
-    window = SDL_CreateWindow("Color keying", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    if (!IMG_Init(IMG_INIT_PNG)) {
+        printf("Can't initialize image loading: %s\n", IMG_GetError());
+    }
+
+    if (TTF_Init() == -1) {
+        printf("Can't initialize text: %s\n", TTF_GetError());
+    }
+
+    window = SDL_CreateWindow("TTF rendering", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (window == NULL) {
         printf("Can't create window: %s\n", SDL_GetError());
     }
 
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (renderer == NULL) {
         printf("Can't create renderer: %s\n", SDL_GetError());
     }
 
-
-    LTexture dots_texture = { NULL, 0, 0 };
-    load_file("dots.png", &dots_texture);
-    init_clips();
-
     SDL_Event e;
     int exit = 0;
+
+    // load text
+    load_font("ANthoy Fantano", &font_texture);
 
     while (!exit) {
         while (SDL_PollEvent(&e) != 0) {
@@ -121,14 +97,10 @@ int main() {
         SDL_RenderClear(renderer);
 
 
-        // render here
-        render(0, 0, &dots_texture, &clips[0]);
-        render(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, &dots_texture, &clips[3]);
-        
+        // render here   
+        render((SCREEN_WIDTH / 2), (SCREEN_HEIGHT / 2), &font_texture);
         
         SDL_RenderPresent(renderer);
-
-
         
     }
 
@@ -136,8 +108,10 @@ int main() {
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
 
+    TTF_Quit();
     IMG_Quit();
     SDL_Quit();
+    
 
     SDL_Quit();
     return 0;
