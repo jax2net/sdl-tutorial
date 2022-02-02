@@ -103,8 +103,6 @@ int main() {
 
     IMG_Quit();
     SDL_Quit();
-
-    SDL_Quit();
     return 0;
         
 }
