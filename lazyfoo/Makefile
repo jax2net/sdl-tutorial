@@ -2,6 +2,9 @@ CC=gcc
 CFLAGS=-Wall -Werror
 LDLIBS=-lSDL2 -lSDL2_image -lSDL2_ttf
 
+template:
+	$(CC) $(CFLAGS) template.c $(LDLIBS) -o template
+
 texture:
 	$(CC) $(CFLAGS) texture.c $(LDLIBS) -o texture
 
