@@ -24,6 +24,8 @@ typedef struct {
 // globals
 SDL_Window* window;
 SDL_Renderer* renderer;
+TTF_Font* font;
+GTexture font_texture;
 GTexture current_texture;
 
 void init();
@@ -31,7 +33,8 @@ void shutdown();
 void free_texture();
 
 void render(int x, int y, GTexture texture) {
-    SDL_RenderCopy(renderer, texture.texture, NULL, NULL);
+    SDL_Rect rect = { x, y, texture.w, texture.h };
+    SDL_RenderCopy(renderer, texture.texture, NULL, &rect);
 }
 
 void load_from_file(char* path) {
@@ -50,6 +53,27 @@ void load_from_file(char* path) {
     SDL_FreeSurface(tmp);
 }
 
+void setup_font(char* path, char* text, int size, GTexture* texture)
+{
+    font = TTF_OpenFont(path, size);
+    if (font == NULL) {
+        printf("Failed to open font: %s\n", TTF_GetError());
+    }
+    
+    SDL_Color text_color = { 0, 0, 0 };
+    SDL_Surface* tmp_surface = TTF_RenderText_Solid(font, text, text_color);
+    if (tmp_surface == NULL) {
+        printf("Can't render font: %s\n", TTF_GetError());
+    }
+    texture->texture = SDL_CreateTextureFromSurface(renderer, tmp_surface);
+    if (texture->texture == NULL) {
+        printf("Failed to create texture from surface: %s\n", SDL_GetError());
+    }
+    texture->w = tmp_surface->w;
+    texture->h = tmp_surface->h;
+    SDL_FreeSurface(tmp_surface);
+}
+
 int main() {
     init();
 
@@ -57,7 +81,7 @@ int main() {
     int exit = 0;
 
     // setup texture
-    load_from_file("dice.png");
+    setup_font("lazy.ttf", "This is a template file...", 40, &font_texture);
     
     while (!exit) {
         while (SDL_PollEvent(&e) != 0) {
@@ -67,7 +91,7 @@ int main() {
         SDL_RenderClear(renderer);
 
         // render here
-        render(0, 0, current_texture);
+        render(50, 50, font_texture);
 
         SDL_RenderPresent(renderer);
     }
