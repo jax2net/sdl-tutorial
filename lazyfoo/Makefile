@@ -17,3 +17,5 @@ sprite_sheet:
 mouse:
 	$(CC) $(CFLAGS) mouse.c $(LDLIBS) -o mouse
 
+timing:
+	$(CC) $(CFLAGS) timing.c $(LDLIBS) -o timing
