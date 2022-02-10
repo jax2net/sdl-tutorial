@@ -17,7 +17,7 @@ typedef struct {
     SDL_Texture *texture;
 } Entity;
 
-
+// globals for being used across the game
 extern App app;
 extern Entity player;
 

@@ -37,7 +37,7 @@ int main(int argc, char** argv)
         SDL_RenderClear(app.renderer);
 
         //render here
-        blit(player.texture, player.x, player.y, app.renderer);
+        blit(player.texture, player.x, player.y);
 
         SDL_RenderPresent(app.renderer);
         SDL_Delay(16);
@@ -48,7 +48,6 @@ int main(int argc, char** argv)
     SDL_Quit();
     return 0;
 }
-
 
 void init(void)
 {
