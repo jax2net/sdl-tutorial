@@ -26,19 +26,19 @@ void handle_input(void)
 void handle_key_down(SDL_KeyboardEvent* event)
 {
     if (event->repeat == 0) {
-        if (event->keysym.scancode == SDL_SCANCODE_UP) {
+        if (event->keysym.scancode == SDL_SCANCODE_W) {
             app.up = 1;
         }
 
-        if (event->keysym.scancode == SDL_SCANCODE_DOWN) {
+        if (event->keysym.scancode == SDL_SCANCODE_S) {
             app.down = 1;
         }
 
-        if (event->keysym.scancode == SDL_SCANCODE_LEFT) {
+        if (event->keysym.scancode == SDL_SCANCODE_A) {
             app.left = 1;
         }
 
-        if (event->keysym.scancode == SDL_SCANCODE_RIGHT) {
+        if (event->keysym.scancode == SDL_SCANCODE_D) {
             app.right = 1;
         }
     }
@@ -47,19 +47,19 @@ void handle_key_down(SDL_KeyboardEvent* event)
 void handle_key_up(SDL_KeyboardEvent* event)
 {
     if (event->repeat == 0) {
-        if (event->keysym.scancode == SDL_SCANCODE_UP) {
+        if (event->keysym.scancode == SDL_SCANCODE_W) {
             app.up = 0;
         }
 
-        if (event->keysym.scancode == SDL_SCANCODE_DOWN) {
+        if (event->keysym.scancode == SDL_SCANCODE_D) {
             app.down = 0;
         }
 
-        if (event->keysym.scancode == SDL_SCANCODE_LEFT) {
+        if (event->keysym.scancode == SDL_SCANCODE_A) {
             app.left = 0;
         }
 
-        if (event->keysym.scancode == SDL_SCANCODE_RIGHT) {
+        if (event->keysym.scancode == SDL_SCANCODE_D) {
             app.right = 0;
         }
     }
