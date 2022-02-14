@@ -22,8 +22,8 @@ int main(int argc, char** argv)
 
     SDL_Texture* mike_texture = load_texture_from_file("../assets/mike.jpg", app.renderer);
     player.texture = mike_texture;
-    player.x = 100;
-    player.y = 100;
+    player.x = 200;
+    player.y = 200;
 
     while (1) {
         handle_input();

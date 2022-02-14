@@ -16,8 +16,9 @@ SDL_Texture* load_texture_from_file(char* path)
 void blit(SDL_Texture* texture, int x, int y)
 {
     SDL_Rect dest;
+    dest.w = 75;
+    dest.h = 75;
     dest.x = x;
     dest.y = y;
-    SDL_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
     SDL_RenderCopy(app.renderer, texture, NULL, &dest);
 }

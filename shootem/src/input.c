@@ -51,7 +51,7 @@ void handle_key_up(SDL_KeyboardEvent* event)
             app.up = 0;
         }
 
-        if (event->keysym.scancode == SDL_SCANCODE_D) {
+        if (event->keysym.scancode == SDL_SCANCODE_S) {
             app.down = 0;
         }
 
