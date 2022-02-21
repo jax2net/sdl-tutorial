@@ -9,6 +9,7 @@
 
 App app;
 Entity player;
+Entity bullet;
 
 void init(void);
 void shutdown(void);
@@ -17,6 +18,7 @@ int main(int argc, char** argv)
 {
     memset(&app, 0, sizeof(App));
     memset(&player, 0, sizeof(Entity));
+    memset(&bullet, 0, sizeof(Entity));
 
     init();
 
@@ -24,6 +26,9 @@ int main(int argc, char** argv)
     player.texture = mike_texture;
     player.x = 200;
     player.y = 200;
+
+    SDL_Texture* bullet_texture = load_texture_from_file("../assets/bullet.png", app.renderer);
+    bullet.texture = bullet_texture;
 
     while (1) {
         handle_input();
@@ -33,11 +38,30 @@ int main(int argc, char** argv)
         if (app.left) player.x -= 4;
         if (app.right) player.x += 4;
 
+        // bullet
+        if (app.fire && bullet.health == 0) {
+            bullet.x = player.x;
+            bullet.y = player.y;
+            bullet.dx = 16;
+            bullet.dy = 0;
+            bullet.health = 1;
+        }
+
+        bullet.x += bullet.dx;
+        bullet.y += bullet.dy;
+
+        if (bullet.x > SCREEN_WIDTH) {
+            bullet.health = 0;
+        }
+
         SDL_SetRenderDrawColor(app.renderer, 0xFF, 0xFF, 0xFF, 0xFF);
         SDL_RenderClear(app.renderer);
 
-        //render here
         blit(player.texture, player.x, player.y);
+
+        if (bullet.health > 0) {
+            blit(bullet.texture, bullet.x, bullet.y);
+        }
 
         SDL_RenderPresent(app.renderer);
         SDL_Delay(16);
