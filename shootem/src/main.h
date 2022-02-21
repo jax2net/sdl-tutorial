@@ -5,11 +5,6 @@
 typedef struct {
     SDL_Renderer* renderer;
     SDL_Window* window;
-    int up;
-    int down;
-    int left;
-    int right;
-    int fire;
 } App;
 
 typedef struct {
@@ -21,8 +16,17 @@ typedef struct {
     SDL_Texture *texture;
 } Entity;
 
+typedef struct {
+    int up;
+    int down;
+    int left;
+    int right;
+    int fire;
+} PlayerState;
+
 // globals for being used across the game
 extern App app;
 extern Entity player;
+extern PlayerState pstate;
 
 #endif //MAIN_H

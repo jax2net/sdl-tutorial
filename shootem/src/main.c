@@ -10,6 +10,7 @@
 App app;
 Entity player;
 Entity bullet;
+PlayerState pstate;
 
 void init(void);
 void shutdown(void);
@@ -19,6 +20,8 @@ int main(int argc, char** argv)
     memset(&app, 0, sizeof(App));
     memset(&player, 0, sizeof(Entity));
     memset(&bullet, 0, sizeof(Entity));
+    memset(&pstate, 0, sizeof(PlayerState));
+    
 
     init();
 
@@ -33,13 +36,13 @@ int main(int argc, char** argv)
     while (1) {
         handle_input();
 
-        if (app.up) player.y -= 4;
-        if (app.down) player.y += 4;
-        if (app.left) player.x -= 4;
-        if (app.right) player.x += 4;
+        if (pstate.up) player.y -= 4;
+        if (pstate.down) player.y += 4;
+        if (pstate.left) player.x -= 4;
+        if (pstate.right) player.x += 4;
 
         // bullet
-        if (app.fire && bullet.health == 0) {
+        if (pstate.fire && bullet.health == 0) {
             bullet.x = player.x;
             bullet.y = player.y;
             bullet.dx = 16;
